@@ -36,7 +36,7 @@
         const ctx = canvas.getContext('2d');
 
         // 拉伸比例（边缘区域占图片总宽/高的百分比）
-        const stretchRatio = 0.05; // 改为5%
+        const stretchRatio = 0.005; // 0.5%（左右各0.5%，共1%）
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -60,6 +60,9 @@
                 // 清空画布
                 ctx.clearRect(0, 0, cw, ch);
 
+                // 关闭抗锯齿，防止边缘出现白线
+                ctx.imageSmoothingEnabled = false;
+
                 // 判断是手机竖屏还是电脑横屏
                 const isMobile = cw <= 768;
 
@@ -80,44 +83,46 @@
             const scale = cw / iw;
             const scaledH = ih * scale;
 
-            // 中心区域高度（不拉伸的部分）— 95%
-            const centerRatio = 1 - 2 * stretchRatio; // 0.9
+            // 中心区域高度（不拉伸的部分）— 99%
+            const centerRatio = 1 - 2 * stretchRatio; // 0.995
             const centerH = scaledH * centerRatio;
             const edgeH = scaledH * stretchRatio;
 
             // 目标：上下边缘拉伸到撑满视口高度
             const targetEdgeH = Math.max((ch - centerH) / 2, 0);
 
-            // 绘制上边缘（拉伸）
-            if (targetEdgeH > 0 && edgeH > 0) {
-                ctx.drawImage(
-                    img,
-                    0, 0,
-                    iw, ih * stretchRatio,
-                    0, 0,
-                    cw, targetEdgeH
-                );
-            }
-
-            // 绘制中间区域（不变形）— 95%
-            const midStartY = targetEdgeH;
+            // 先绘制中间区域（不变形）— 99%
             ctx.drawImage(
                 img,
                 0, ih * stretchRatio,
                 iw, ih * centerRatio,
-                0, midStartY,
+                0, targetEdgeH,
                 cw, centerH
             );
 
-            // 绘制下边缘（拉伸）
-            const bottomStartY = midStartY + centerH;
+            // 绘制上边缘（拉伸）
             if (targetEdgeH > 0 && edgeH > 0) {
+                // 使用整数坐标，防止亚像素渲染导致白线
+                const topEdgeH = Math.round(targetEdgeH);
                 ctx.drawImage(
                     img,
-                    0, ih * (1 - stretchRatio),
-                    iw, ih * stretchRatio,
+                    0, 0,
+                    iw, Math.ceil(ih * stretchRatio),
+                    0, 0,
+                    cw, topEdgeH
+                );
+            }
+
+            // 绘制下边缘（拉伸）
+            const bottomStartY = Math.round(targetEdgeH + centerH);
+            if (targetEdgeH > 0 && edgeH > 0) {
+                const bottomEdgeH = Math.round(targetEdgeH);
+                ctx.drawImage(
+                    img,
+                    0, Math.floor(ih * (1 - stretchRatio)),
+                    iw, Math.ceil(ih * stretchRatio),
                     0, bottomStartY,
-                    cw, targetEdgeH
+                    cw, bottomEdgeH
                 );
             }
         }
@@ -128,44 +133,45 @@
             const scale = ch / ih;
             const scaledW = iw * scale;
 
-            // 中心区域宽度（不拉伸的部分）— 95%
-            const centerRatio = 1 - 2 * stretchRatio; // 0.9
+            // 中心区域宽度（不拉伸的部分）— 99%
+            const centerRatio = 1 - 2 * stretchRatio; // 0.995
             const centerW = scaledW * centerRatio;
             const edgeW = scaledW * stretchRatio;
 
             // 目标：左右边缘拉伸到撑满视口宽度
             const targetEdgeW = Math.max((cw - centerW) / 2, 0);
 
-            // 绘制左边缘（拉伸）
-            if (targetEdgeW > 0 && edgeW > 0) {
-                ctx.drawImage(
-                    img,
-                    0, 0,
-                    iw * stretchRatio, ih,
-                    0, 0,
-                    targetEdgeW, ch
-                );
-            }
-
-            // 绘制中间区域（不变形）— 95%
-            const midStartX = targetEdgeW;
+            // 先绘制中间区域（不变形）— 99%
             ctx.drawImage(
                 img,
                 iw * stretchRatio, 0,
                 iw * centerRatio, ih,
-                midStartX, 0,
+                targetEdgeW, 0,
                 centerW, ch
             );
 
-            // 绘制右边缘（拉伸）
-            const rightStartX = midStartX + centerW;
+            // 绘制左边缘（拉伸）
             if (targetEdgeW > 0 && edgeW > 0) {
+                const leftEdgeW = Math.round(targetEdgeW);
                 ctx.drawImage(
                     img,
-                    iw * (1 - stretchRatio), 0,
-                    iw * stretchRatio, ih,
+                    0, 0,
+                    Math.ceil(iw * stretchRatio), ih,
+                    0, 0,
+                    leftEdgeW, ch
+                );
+            }
+
+            // 绘制右边缘（拉伸）
+            const rightStartX = Math.round(targetEdgeW + centerW);
+            if (targetEdgeW > 0 && edgeW > 0) {
+                const rightEdgeW = Math.round(targetEdgeW);
+                ctx.drawImage(
+                    img,
+                    Math.floor(iw * (1 - stretchRatio)), 0,
+                    Math.ceil(iw * stretchRatio), ih,
                     rightStartX, 0,
-                    targetEdgeW, ch
+                    rightEdgeW, ch
                 );
             }
         }
