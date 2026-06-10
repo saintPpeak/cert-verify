@@ -5,48 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>成都队群聊二维码</title>
     <style>
-        body {
+        /* 重置默认边距，确保视口高度准确 */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
             height: 100vh;
+            /* 使用 Flex 布局让图片完美居中 */
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: #ffffff;
-            font-family: Arial, sans-serif;
         }
 
-        .container {
-            text-align: center;
-            max-width: 90%;
-            padding: 20px;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            border: none;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            margin-top: 20px;
-            font-size: 24px;
-            color: #333;
-        }
-
-        p {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #666;
+        .qrcode-image {
+            /* 核心修改：高度设为视口高度，宽度自动等比例缩放 */
+            height: 100vh;
+            width: auto;
+            
+            /* 保持图片原有比例，防止被拉伸变形 */
+            object-fit: contain;
+            
+            /* 可选：增加一点内边距防止图片贴边，如果不需要可删除 */
+            padding: 10px;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="qrcode.jpg" alt="成都队群聊二维码">
-        <h1>群聊：成都队</h1>
-        该二维码7天内（6月17日前）有效，重新进入将更新
-    </div>
+    <!-- 请将 src 替换为你实际上传的图片路径 -->
+    <img src="qrcode.jpg" alt="成都队群聊二维码" class="qrcode-image">
 </body>
 </html>
