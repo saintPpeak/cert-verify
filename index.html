@@ -19,110 +19,36 @@
             align-items: center;
             background-color: #ffffff;
             overflow: hidden;
-            position: relative;
         }
 
-        /* 底层图片 - 清晰铺满整个视口 */
-        .background-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        .background-layer img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        img {
             display: block;
-        }
-
-        /* 顶层图片容器 - 用于遮罩渐变 */
-        .foreground-wrapper {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-        }
-
-        .qrcode-image {
             pointer-events: none;
             user-select: none;
-            position: relative;
-            z-index: 2;
         }
 
-        /* 手机端样式 */
+        /* 手机端：宽度撑满，高度自适应，上下边缘拉伸 */
         @media screen and (max-width: 768px) {
-            .qrcode-image {
+            img {
                 width: 100vw;
-                height: auto;
-                max-height: 100vh;
-                /* 上边缘和下边缘透明渐变 */
-                mask-image: linear-gradient(
-                    to bottom,
-                    transparent 0%,
-                    black 2%,
-                    black 98%,
-                    transparent 100%
-                );
-                -webkit-mask-image: linear-gradient(
-                    to bottom,
-                    transparent 0%,
-                    black 2%,
-                    black 98%,
-                    transparent 100%
-                );
+                height: 100vh;
+                object-fit: cover;
+                object-position: center center;
             }
         }
 
-        /* 电脑端样式 */
+        /* 电脑端：高度撑满，宽度自适应，左右边缘拉伸 */
         @media screen and (min-width: 769px) {
-            .qrcode-image {
+            img {
                 height: 100vh;
-                width: auto;
-                max-width: 100vw;
-                /* 左边缘和右边缘透明渐变 */
-                mask-image: linear-gradient(
-                    to right,
-                    transparent 0%,
-                    black 2%,
-                    black 98%,
-                    transparent 100%
-                );
-                -webkit-mask-image: linear-gradient(
-                    to right,
-                    transparent 0%,
-                    black 2%,
-                    black 98%,
-                    transparent 100%
-                );
+                width: 100vw;
+                object-fit: cover;
+                object-position: center center;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 底层图片 - 清晰铺满整个视口 -->
-    <div class="background-layer">
-        <picture>
-            <source media="(max-width: 768px)" srcset="phqrcode.jpeg">
-            <source media="(min-width: 769px)" srcset="pcqrcode.jpeg">
-            <img src="phqrcode.jpeg" alt="">
-        </picture>
-    </div>
-
-    <!-- 顶层图片 - 带边缘透明渐变 -->
-    <div class="foreground-wrapper">
-        <picture>
-            <source media="(max-width: 768px)" srcset="phqrcode.jpeg">
-            <source media="(min-width: 769px)" srcset="pcqrcode.jpeg">
-            <img src="phqrcode.jpeg" alt="成都队群聊二维码" class="qrcode-image">
-        </picture>
-    </div>
+    <img src="qrcode.jpeg" alt="成都队群聊二维码">
 </body>
 </html>
