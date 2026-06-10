@@ -21,34 +21,162 @@
             overflow: hidden;
         }
 
-        img {
+        canvas {
             display: block;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        /* 手机端：宽度撑满，高度自适应，上下边缘拉伸 */
-        @media screen and (max-width: 768px) {
-            img {
-                width: 100vw;
-                height: 100vh;
-                object-fit: cover;
-                object-position: center center;
-            }
-        }
-
-        /* 电脑端：高度撑满，宽度自适应，左右边缘拉伸 */
-        @media screen and (min-width: 769px) {
-            img {
-                height: 100vh;
-                width: 100vw;
-                object-fit: cover;
-                object-position: center center;
-            }
+            width: 100vw;
+            height: 100vh;
         }
     </style>
 </head>
 <body>
-    <img src="qrcode.jpeg" alt="成都队群聊二维码">
+    <canvas id="myCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 拉伸比例（边缘区域占图片总宽/高的百分比）
+        const stretchRatio = 0.15;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drawImage();
+        }
+
+        function getImageSrc() {
+            const isMobile = window.innerWidth <= 768;
+            return isMobile ? 'phqrcode.jpeg' : 'pcqrcode.jpeg';
+        }
+
+        function drawImage() {
+            const img = new Image();
+            img.onload = function() {
+                const cw = canvas.width;
+                const ch = canvas.height;
+                const iw = img.width;
+                const ih = img.height;
+
+                // 清空画布
+                ctx.clearRect(0, 0, cw, ch);
+
+                // 判断是手机竖屏还是电脑横屏
+                const isMobile = cw <= 768;
+
+                if (isMobile) {
+                    // 手机竖屏：上下边缘拉伸
+                    drawVerticalStretch(img, cw, ch, iw, ih);
+                } else {
+                    // 电脑横屏：左右边缘拉伸
+                    drawHorizontalStretch(img, cw, ch, iw, ih);
+                }
+            };
+            img.src = getImageSrc();
+        }
+
+        // 上下边缘拉伸（手机竖屏）
+        function drawVerticalStretch(img, cw, ch, iw, ih) {
+            // 计算图片缩放，使宽度撑满
+            const scale = cw / iw;
+            const scaledW = iw * scale;
+            const scaledH = ih * scale;
+
+            // 中心区域高度（不拉伸的部分）
+            const centerRatio = 1 - 2 * stretchRatio;
+            const centerH = scaledH * centerRatio;
+            const edgeH = scaledH * stretchRatio;
+
+            // 目标：上下边缘拉伸到撑满视口高度
+            const targetEdgeH = Math.max((ch - centerH) / 2, 0);
+
+            // 绘制上边缘（拉伸）
+            if (targetEdgeH > 0 && edgeH > 0) {
+                ctx.drawImage(
+                    img,
+                    0, 0,
+                    iw, ih * stretchRatio,
+                    0, 0,
+                    cw, targetEdgeH
+                );
+            }
+
+            // 绘制中间区域（不变形）
+            const midStartY = targetEdgeH;
+            ctx.drawImage(
+                img,
+                0, ih * stretchRatio,
+                iw, ih * centerRatio,
+                0, midStartY,
+                cw, centerH
+            );
+
+            // 绘制下边缘（拉伸）
+            const bottomStartY = midStartY + centerH;
+            if (targetEdgeH > 0 && edgeH > 0) {
+                ctx.drawImage(
+                    img,
+                    0, ih * (1 - stretchRatio),
+                    iw, ih * stretchRatio,
+                    0, bottomStartY,
+                    cw, targetEdgeH
+                );
+            }
+        }
+
+        // 左右边缘拉伸（电脑横屏）
+        function drawHorizontalStretch(img, cw, ch, iw, ih) {
+            // 计算图片缩放，使高度撑满
+            const scale = ch / ih;
+            const scaledW = iw * scale;
+            const scaledH = ih * scale;
+
+            // 中心区域宽度（不拉伸的部分）
+            const centerRatio = 1 - 2 * stretchRatio;
+            const centerW = scaledW * centerRatio;
+            const edgeW = scaledW * stretchRatio;
+
+            // 目标：左右边缘拉伸到撑满视口宽度
+            const targetEdgeW = Math.max((cw - centerW) / 2, 0);
+
+            // 绘制左边缘（拉伸）
+            if (targetEdgeW > 0 && edgeW > 0) {
+                ctx.drawImage(
+                    img,
+                    0, 0,
+                    iw * stretchRatio, ih,
+                    0, 0,
+                    targetEdgeW, ch
+                );
+            }
+
+            // 绘制中间区域（不变形）
+            const midStartX = targetEdgeW;
+            ctx.drawImage(
+                img,
+                iw * stretchRatio, 0,
+                iw * centerRatio, ih,
+                midStartX, 0,
+                centerW, ch
+            );
+
+            // 绘制右边缘（拉伸）
+            const rightStartX = midStartX + centerW;
+            if (targetEdgeW > 0 && edgeW > 0) {
+                ctx.drawImage(
+                    img,
+                    iw * (1 - stretchRatio), 0,
+                    iw * stretchRatio, ih,
+                    rightStartX, 0,
+                    targetEdgeW, ch
+                );
+            }
+        }
+
+        // 监听窗口大小变化
+        window.addEventListener('resize', resizeCanvas);
+
+        // 初始渲染
+        resizeCanvas();
+    </script>
 </body>
 </html>
