@@ -19,11 +19,35 @@
             align-items: center;
             background-color: #ffffff;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* 模糊背景层 - 用于填充空白区域 */
+        .blur-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* 主图片容器 */
+        .image-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
         }
 
         .qrcode-image {
             pointer-events: none;
             user-select: none;
+            position: relative;
+            z-index: 2;
         }
 
         /* 手机端样式 */
@@ -31,6 +55,12 @@
             .qrcode-image {
                 width: 100vw;
                 height: auto;
+                max-height: 100vh;
+            }
+
+            .blur-background {
+                /* 手机端：用模糊背景填充上下空白 */
+                object-fit: cover;
             }
         }
 
@@ -39,19 +69,31 @@
             .qrcode-image {
                 height: 100vh;
                 width: auto;
+                max-width: 100vw;
+            }
+
+            .blur-background {
+                /* 电脑端：用模糊背景填充左右空白 */
+                object-fit: cover;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 使用picture元素根据设备加载不同图片 -->
-    <picture>
-        <!-- 手机端使用phqrcode.jpg -->
+    <!-- 模糊背景层 -->
+    <picture class="blur-background">
         <source media="(max-width: 768px)" srcset="phqrcode.jpg">
-        <!-- 电脑端使用pcqrcode.jpg -->
         <source media="(min-width: 769px)" srcset="pcqrcode.jpg">
-        <!-- 默认图片（备用） -->
-        <img src="phqrcode.jpg" alt="成都队群聊二维码" class="qrcode-image">
+        <img src="phqrcode.jpg" alt="" style="width:100%;height:100%;object-fit:cover;filter:blur(20px);transform:scale(1.1);">
     </picture>
+
+    <!-- 主图片层 -->
+    <div class="image-container">
+        <picture>
+            <source media="(max-width: 768px)" srcset="phqrcode.jpg">
+            <source media="(min-width: 769px)" srcset="pcqrcode.jpg">
+            <img src="phqrcode.jpg" alt="成都队群聊二维码" class="qrcode-image">
+        </picture>
+    </div>
 </body>
 </html>
