@@ -14,30 +14,44 @@
         body {
             width: 100vw;
             height: 100vh;
-            /* 水平垂直居中 */
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: #ffffff;
-            overflow: hidden; /* 防止出现滚动条 */
+            overflow: hidden;
         }
 
         .qrcode-image {
-            /* 核心修改：宽度设为视口宽度，高度自动等比例缩放 */
-            width: 100vw;
-            height: auto;
-            
-            /* 确保图片不变形 */
-            object-fit: contain;
-            
-            /* 防止图片被拖动 */
             pointer-events: none;
             user-select: none;
+        }
+
+        /* 手机端样式 */
+        @media screen and (max-width: 768px) {
+            .qrcode-image {
+                width: 100vw;
+                height: auto;
+            }
+        }
+
+        /* 电脑端样式 */
+        @media screen and (min-width: 769px) {
+            .qrcode-image {
+                height: 100vh;
+                width: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 图片名已改为 qrcode.png -->
-    <img src="https://env-00jxto3ce2t2.normal.cloudstatic.cn/qrcode.jpg?expire_at=1781086421&er_sign=fcf74ba0e03d333c81f28ef756041454" alt="成都队群聊二维码" class="qrcode-image">
+    <!-- 使用picture元素根据设备加载不同图片 -->
+    <picture>
+        <!-- 手机端使用phqrcode.jpg -->
+        <source media="(max-width: 768px)" srcset="phqrcode.jpg">
+        <!-- 电脑端使用pcqrcode.jpg -->
+        <source media="(min-width: 769px)" srcset="pcqrcode.jpg">
+        <!-- 默认图片（备用） -->
+        <img src="phqrcode.jpg" alt="成都队群聊二维码" class="qrcode-image">
+    </picture>
 </body>
 </html>
