@@ -22,8 +22,8 @@
             position: relative;
         }
 
-        /* 模糊背景层 - 用于填充空白区域 */
-        .blur-background {
+        /* 底层图片 - 清晰铺满整个视口 */
+        .background-layer {
             position: absolute;
             top: 0;
             left: 0;
@@ -32,8 +32,15 @@
             z-index: 0;
         }
 
-        /* 主图片容器 */
-        .image-container {
+        .background-layer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 顶层图片容器 - 用于遮罩渐变 */
+        .foreground-wrapper {
             position: relative;
             z-index: 1;
             display: flex;
@@ -56,11 +63,21 @@
                 width: 100vw;
                 height: auto;
                 max-height: 100vh;
-            }
-
-            .blur-background {
-                /* 手机端：用模糊背景填充上下空白 */
-                object-fit: cover;
+                /* 上边缘和下边缘透明渐变 */
+                mask-image: linear-gradient(
+                    to bottom,
+                    transparent 0%,
+                    black 15%,
+                    black 85%,
+                    transparent 100%
+                );
+                -webkit-mask-image: linear-gradient(
+                    to bottom,
+                    transparent 0%,
+                    black 15%,
+                    black 85%,
+                    transparent 100%
+                );
             }
         }
 
@@ -70,25 +87,37 @@
                 height: 100vh;
                 width: auto;
                 max-width: 100vw;
-            }
-
-            .blur-background {
-                /* 电脑端：用模糊背景填充左右空白 */
-                object-fit: cover;
+                /* 左边缘和右边缘透明渐变 */
+                mask-image: linear-gradient(
+                    to right,
+                    transparent 0%,
+                    black 25%,
+                    black 75%,
+                    transparent 100%
+                );
+                -webkit-mask-image: linear-gradient(
+                    to right,
+                    transparent 0%,
+                    black 25%,
+                    black 75%,
+                    transparent 100%
+                );
             }
         }
     </style>
 </head>
 <body>
-    <!-- 模糊背景层 -->
-    <picture class="blur-background">
-        <source media="(max-width: 768px)" srcset="phqrcode.jpg">
-        <source media="(min-width: 769px)" srcset="pcqrcode.jpg">
-        <img src="phqrcode.jpg" alt="" style="width:100%;height:100%;object-fit:cover;filter:blur(20px);transform:scale(1.1);">
-    </picture>
+    <!-- 底层图片 - 清晰铺满整个视口 -->
+    <div class="background-layer">
+        <picture>
+            <source media="(max-width: 768px)" srcset="phqrcode.jpg">
+            <source media="(min-width: 769px)" srcset="pcqrcode.jpg">
+            <img src="phqrcode.jpg" alt="">
+        </picture>
+    </div>
 
-    <!-- 主图片层 -->
-    <div class="image-container">
+    <!-- 顶层图片 - 带边缘透明渐变 -->
+    <div class="foreground-wrapper">
         <picture>
             <source media="(max-width: 768px)" srcset="phqrcode.jpg">
             <source media="(min-width: 769px)" srcset="pcqrcode.jpg">
