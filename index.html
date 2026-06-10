@@ -36,7 +36,7 @@
         const ctx = canvas.getContext('2d');
 
         // 拉伸比例（边缘区域占图片总宽/高的百分比）
-        const stretchRatio = 0.05;
+        const stretchRatio = 0.05; // 改为5%
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -78,11 +78,10 @@
         function drawVerticalStretch(img, cw, ch, iw, ih) {
             // 计算图片缩放，使宽度撑满
             const scale = cw / iw;
-            const scaledW = iw * scale;
             const scaledH = ih * scale;
 
-            // 中心区域高度（不拉伸的部分）
-            const centerRatio = 1 - 2 * stretchRatio;
+            // 中心区域高度（不拉伸的部分）— 95%
+            const centerRatio = 1 - 2 * stretchRatio; // 0.9
             const centerH = scaledH * centerRatio;
             const edgeH = scaledH * stretchRatio;
 
@@ -100,7 +99,7 @@
                 );
             }
 
-            // 绘制中间区域（不变形）
+            // 绘制中间区域（不变形）— 95%
             const midStartY = targetEdgeH;
             ctx.drawImage(
                 img,
@@ -128,10 +127,9 @@
             // 计算图片缩放，使高度撑满
             const scale = ch / ih;
             const scaledW = iw * scale;
-            const scaledH = ih * scale;
 
-            // 中心区域宽度（不拉伸的部分）
-            const centerRatio = 1 - 2 * stretchRatio;
+            // 中心区域宽度（不拉伸的部分）— 95%
+            const centerRatio = 1 - 2 * stretchRatio; // 0.9
             const centerW = scaledW * centerRatio;
             const edgeW = scaledW * stretchRatio;
 
@@ -149,7 +147,7 @@
                 );
             }
 
-            // 绘制中间区域（不变形）
+            // 绘制中间区域（不变形）— 95%
             const midStartX = targetEdgeW;
             ctx.drawImage(
                 img,
